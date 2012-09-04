@@ -1,0 +1,39 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+
+repositories{
+    mavenCentral()
+}
+
+dependencies{
+    compile 'org.apache.camel:camel-core:2.9.2'
+    compile 'org.apache.camel:camel-jms:2.9.2'
+    compile 'org.apache.activemq:activemq-core:5.6.0'   
+    compile 'org.apache.camel:camel-aws:2.9.2'
+    compile 'org.apache.camel:camel-http:2.9.2'
+    compile 'commons-cli:commons-cli:1.2'
+    compile 'org.apache.camel:camel-tika:0.2'
+    compile 'org.apache.tika:tika-core:1.2'
+    compile 'org.apache.tika:tika-parsers:1.2'
+
+    testCompile 'junit:junit:4.10'
+}
+
+
+task writePom << {
+    pom {
+        project {
+            inceptionYear '2012'
+            groupId 'net.flow7.drive-cleaners'
+            artifactId 'drive-cleaners-server'
+            version '1.0-SNAPSHOT'
+            licenses {
+                license {
+                    name 'The Apache Software License, Version 2.0'
+                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    distribution 'repo'
+                }
+            }
+        }
+    }.writeTo("pom.xml")
+}

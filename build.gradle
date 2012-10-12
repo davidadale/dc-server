@@ -13,8 +13,10 @@ dependencies{
     compile 'org.apache.camel:camel-http:2.9.2'
     compile 'commons-cli:commons-cli:1.2'
     compile 'org.apache.camel:camel-tika:0.2'
+    compile 'org.apache.camel:camel-printer:2.9.2'
     compile 'org.apache.tika:tika-core:1.2'
     compile 'org.apache.tika:tika-parsers:1.2'
+    compile 'org.apache.pdfbox:pdfbox:1.7.1'
 
     testCompile 'junit:junit:4.10'
 }

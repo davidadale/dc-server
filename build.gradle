@@ -1,0 +1,42 @@
+apply plugin: 'groovy'
+apply plugin: 'application'
+
+repositories{
+    mavenCentral()
+    mavenLocal()
+}
+
+dependencies{
+    //groovy 'org.codehaus.groovy:groovy-all:2.0.5'
+    //compile 'com.amazonaws:aws-java-sdk:1.4.6'
+    compile 'org.codehaus.groovy:groovy-all:2.0.5'
+    compile 'org.apache.camel:camel-core:2.11.0'    
+    compile 'org.apache.camel:camel-jms:2.11.0'
+    compile 'org.apache.activemq:activemq-core:5.6.0'   
+    compile 'org.apache.camel:camel-aws:2.11.0'
+    compile 'org.apache.camel:camel-http:2.11.0'
+    compile 'commons-cli:commons-cli:1.2'
+    compile 'org.apache.camel:camel-tika:0.2'
+    //compile 'org.apache.camel:camel-printer:2.9.2'
+    compile 'org.apache.tika:tika-core:1.2'
+    compile 'org.apache.tika:tika-parsers:1.2'
+    compile 'org.apache.pdfbox:pdfbox:1.7.1'
+    compile 'org.slf4j:slf4j-api:1.6.6'
+    compile 'org.slf4j:slf4j-simple:1.6.6'
+    compile 'jline:jline:2.11'
+    compile 'commons-io:commons-io:2.4'
+    testCompile 'org.apache.camel:camel-test:2.11.0'
+    testCompile 'junit:junit:4.10'
+}
+
+jar {
+	manifest { attributes 'Main-Class': 'net.flow7.dc.server.Server' }
+}
+
+mainClassName = 'net.flow7.dc.server.Server'
+
+run {
+   if ( project.hasProperty('args') ) {
+       args project.args.split('\\s+')
+   }
+}

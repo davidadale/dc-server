@@ -1,0 +1,38 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package net.flow7.dc.server;
+
+import java.util.LinkedList;
+import java.util.List;
+
+/**
+ *
+ * @author daviddale
+ */
+public class Mac extends Files {
+
+    List ignore = new LinkedList();
+    
+    public Mac(){
+        super();      
+        ignore.add(".drivecleaners")
+        ignore.add("Library")
+    }
+    
+    
+    @Override
+    public List getIgnoreDirs() {
+        return ignore;
+    }
+    
+    public String getStartLocation(){
+        return "/Users"
+    }
+    
+    public String getSystemName(){
+        return "Macintosh"
+    }
+    
+}

@@ -13,22 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.flow7.dc.server;
+package net.flow7.dc.server
 
-import java.io.File;
-import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.Map;
-import jline.console.ConsoleReader;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.PosixParser;
+import java.io.File
+import java.io.PrintWriter
+import java.util.HashMap
+import java.util.Map
+import jline.console.ConsoleReader
+import org.apache.commons.cli.CommandLine
+import org.apache.commons.cli.CommandLineParser
+import org.apache.commons.cli.HelpFormatter
+import org.apache.commons.cli.Options
+import org.apache.commons.cli.PosixParser
 import com.amazonaws.services.s3.AmazonS3
 import com.amazonaws.services.s3.AmazonS3Client
 import org.apache.camel.CamelContext
 import org.apache.camel.impl.DefaultCamelContext
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+
 /**
  *
  * @author daviddale
@@ -40,6 +43,7 @@ public class Server {
     Server server;
     
     Registry registry;
+    static Logger logger = LoggerFactory.getLogger( Server.class );
     
     
     public Server() {
@@ -89,6 +93,8 @@ public class Server {
         if ( cmdLine.hasOption("f") ) {
             
             String path = cmdLine.getOptionValue("f");
+            logger.info("The server is using a config file: " + path)
+
             File file  = new File( path );
             if( !file.exists() ){
                 throw new RuntimeException("The file specified doesn't exist.");

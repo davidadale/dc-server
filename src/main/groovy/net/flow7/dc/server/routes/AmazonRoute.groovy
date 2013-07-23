@@ -17,7 +17,7 @@ class AmazonRoute extends RouteBuilder{
 
     
     public AmazonRoute( String orderNumber ){
-        super();
+        super();        
         this.orderNumber = orderNumber;
         this.workers = 1;
     }
@@ -29,6 +29,9 @@ class AmazonRoute extends RouteBuilder{
     }
         
     public void configure() throws Exception{
+        
+        errorHandler( deadLetterChannel("log:errorLog?level=ERROR")  );
+        
         from("seda:${orderNumber}").routeId("${orderNumber}")  
         .noAutoStartup()
         .threads( workers )

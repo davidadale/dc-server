@@ -35,7 +35,8 @@ public class Routes {
 
     
     public static RouteBuilder toAmazon( String orderNumber ){
-        return new AmazonRoute( orderNumber );
+        int workers = Config.get().getNumber( "workers" );
+        return new AmazonRoute( orderNumber, workers );
     }
     
     /*Config config;

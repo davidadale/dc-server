@@ -55,7 +55,7 @@ public class SimplePushCommand implements Command {
 
         }
         
-        Registry.get().getContext().stopRoute( bucket )
+        //Registry.get().getContext().stopRoute( bucket )
         return true
     }
     

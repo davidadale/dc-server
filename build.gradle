@@ -7,8 +7,6 @@ repositories{
 }
 
 dependencies{
-    //groovy 'org.codehaus.groovy:groovy-all:2.0.5'
-    //compile 'com.amazonaws:aws-java-sdk:1.4.6'
     compile 'org.codehaus.groovy:groovy-all:2.0.5'
     compile 'org.apache.camel:camel-core:2.11.0'    
     compile 'org.apache.camel:camel-jms:2.11.0'
@@ -21,8 +19,9 @@ dependencies{
     compile 'org.apache.tika:tika-core:1.2'
     compile 'org.apache.tika:tika-parsers:1.2'
     compile 'org.apache.pdfbox:pdfbox:1.7.1'
-    compile 'org.slf4j:slf4j-api:1.6.6'
-    compile 'org.slf4j:slf4j-simple:1.6.6'
+    compile 'org.slf4j:slf4j-api:1.7.5'
+    compile 'org.slf4j:slf4j-log4j12:1.7.5'
+    //compile 'org.slf4j:slf4j-jdk14:1.7.5'
     compile 'jline:jline:2.11'
     compile 'commons-io:commons-io:2.4'
     testCompile 'org.apache.camel:camel-test:2.11.0'

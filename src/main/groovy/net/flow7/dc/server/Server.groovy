@@ -56,8 +56,11 @@ public class Server {
         commands.put( "scan", Config.get().prop("command.scan","net.flow7.dc.server.ScanCommand") );
         commands.put( "copy", Config.get().prop("command.copy","net.flow7.dc.server.CopyCommand") );
         commands.put( "push", Config.get().prop("command.push","net.flow7.dc.server.SimplePushCommand") );
+        commands.put( "list", Config.get().prop("command.list","net.flow7.dc.server.S3ListCommand"));
         commands.put( "help", "net.flow7.dc.server.HelpCommand" );
-
+        
+        
+        
         Integer socketTimeout = Config.get().getInt( "socketTimeout", 600000 );
         
         ClientConfiguration clientConfig = new ClientConfiguration();

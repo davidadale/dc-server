@@ -10,13 +10,13 @@ package net.flow7.dc.server;
  */
 public interface Command {
 
-    boolean handles(String word);
+    public boolean handles(String word);
 
-    void hint();
+    public void hint();
 
-    void perform(CommandCallback callback);
+    public void perform(CommandCallback callback);
 
     // push -u david@flow7.net -p
-    boolean process(String line) throws Exception;
+    public boolean process(String line) throws Exception;
     
 }

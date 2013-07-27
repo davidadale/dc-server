@@ -23,7 +23,6 @@ public abstract class Files {
     public static void setRoot( File rootedAt){
         this.rootedAt = rootedAt;        
     }
-    
 
     public static Files get(String system) {
 
@@ -34,6 +33,10 @@ public abstract class Files {
         }
        
         return instance;
+    }
+    
+    public File startScanAt(){
+        return new File( rootedAt, getStartLocation() );
     }
     
     

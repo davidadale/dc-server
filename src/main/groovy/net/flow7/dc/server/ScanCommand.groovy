@@ -64,11 +64,11 @@ public class ScanCommand implements Command {
         
         File current = determineStart( cmd );
         Files filter = determineSystem( cmd, current )        
-        File root = new File( filter.getStartLocation() );
+        
         
         println "System Scanning: ${filter.systemName}"
         
-        Scanner.get().scan( orderNumber, root , filter.getIgnoreDirs(), filter.getNamePattern() );
+        Scanner.get().scan( orderNumber, filter.startScanAt() , filter.getIgnoreDirs(), filter.getNamePattern() );
 
         println "number of documents found ${Scanner.get().totalNumberOfFiles} for a total size: ${Scanner.get().displayUploadSize}"
         println "totalSize ${Scanner.get().totalUploadSize}"

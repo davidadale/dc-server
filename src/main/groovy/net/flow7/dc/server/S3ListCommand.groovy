@@ -12,12 +12,19 @@ import org.apache.commons.io.FileUtils
 import org.apache.commons.cli.CommandLine
 import org.apache.commons.cli.CommandLineParser
 import org.apache.commons.cli.PosixParser
-
+import org.apache.commons.cli.Options;
 /**
  *
  * @author daviddale
  */
 public class S3ListCommand implements Command{
+    
+    Options options; 
+    
+    public S3ListCommand(){
+        options = new Options();   
+        options.addOption( "o", "order", true, "Required, a valid order number." );
+    }
     
     public boolean handles(String word){
         return "list".equals( word )

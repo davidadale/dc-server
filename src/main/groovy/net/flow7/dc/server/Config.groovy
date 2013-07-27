@@ -105,6 +105,14 @@ public class Config {
         }
     }
     
+    public Integer getInt(String key, int defaultValue ){
+        try{
+            return Integer.valueOf( prop( key ) );
+        }catch(Exception e ){
+            return defaultValue;
+        }        
+    }
+    
     
     
     /**

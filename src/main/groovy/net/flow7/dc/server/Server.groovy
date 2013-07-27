@@ -31,6 +31,7 @@ import org.apache.camel.CamelContext
 import org.apache.camel.impl.DefaultCamelContext
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import com.amazonaws.ClientConfiguration
 
 /**
  *
@@ -57,8 +58,15 @@ public class Server {
         commands.put( "push", Config.get().prop("command.push","net.flow7.dc.server.SimplePushCommand") );
         commands.put( "help", "net.flow7.dc.server.HelpCommand" );
 
+        Integer socketTimeout = Config.get().getInt( "socketTimeout", 600000 );
+        
+        ClientConfiguration clientConfig = new ClientConfiguration();
+        clientConfig.setSocketTimeout( socketTimeout ); // wait 10 by default.
+        
+        log( "Socket timeout is set to: %s", socketTimeout );
+        
         // create an amazon client 
-        AmazonS3 client = new AmazonS3Client( Config.get().getCredentialsProvider() );        
+        AmazonS3 client = new AmazonS3Client( Config.get().getCredentialsProvider(), clientConfig );        
         Registry.get().bind( "client", client )
         Registry.get().getContext().start()
         
@@ -72,7 +80,7 @@ public class Server {
         
     }
 
-    private void log(String msg, String... args) {
+    private void log(String msg, Object... args) {
 
         if (args != null) {
             System.out.println(String.format(msg, (Object[]) args));

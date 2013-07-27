@@ -64,7 +64,7 @@ public class ScanCommand implements Command {
         
         File current = determineStart( cmd );
         Files filter = determineSystem( cmd, current )        
-        File root = mew File( filter.getStartLocation() );
+        File root = new File( filter.getStartLocation() );
         
         println "System Scanning: ${filter.systemName}"
         

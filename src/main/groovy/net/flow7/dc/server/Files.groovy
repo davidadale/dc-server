@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
+import java.io.File;
 
 public abstract class Files {
 
@@ -14,7 +15,14 @@ public abstract class Files {
     Map<String, String> images = new HashMap<String, String>();
     Map<String, String> developer = new HashMap<String, String>();
     Map<String, String> defaultFilters = new HashMap<String,String>();
+    
+    static File rootedAt = new File("/");
+ 
     static Files instance = null
+    
+    public static void setRoot( File rootedAt){
+        this.rootedAt = rootedAt;        
+    }
     
 
     public static Files get(String system) {
@@ -53,11 +61,11 @@ public abstract class Files {
     
     public static String guess(){
         
-        if( new File("/Windows").exists() ){
+        if( new File(rootedAt, "Windows").exists() ){
             return "windows"
         }
         
-        if( new File("/Applications").exists() ){
+        if( new File(rootedAt, "Applications").exists() ){
             return "mac"
         }
         

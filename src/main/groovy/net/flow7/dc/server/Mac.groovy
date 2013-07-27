@@ -19,8 +19,7 @@ public class Mac extends Files {
         super();      
         ignore.add(".drivecleaners")
         ignore.add("Library")
-    }
-    
+    }    
     
     @Override
     public List getIgnoreDirs() {
@@ -28,7 +27,7 @@ public class Mac extends Files {
     }
     
     public String getStartLocation(){
-        return "/Users"
+        return System.getProperty("user.home")
     }
     
     public String getSystemName(){

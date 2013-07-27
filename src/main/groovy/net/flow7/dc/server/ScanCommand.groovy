@@ -61,12 +61,14 @@ public class ScanCommand implements Command {
         
         String orderNumber = cmd.getOptionValue("o")
         
-        Files filter = determineSystem( cmd )        
-        File current = determineStart( cmd, filter );
+        
+        File current = determineStart( cmd );
+        Files filter = determineSystem( cmd, current )        
+        File root = mew File( filter.getStartLocation() );
         
         println "System Scanning: ${filter.systemName}"
         
-        Scanner.get().scan( orderNumber, current, filter.getIgnoreDirs(), filter.getNamePattern() );
+        Scanner.get().scan( orderNumber, root , filter.getIgnoreDirs(), filter.getNamePattern() );
 
         println "number of documents found ${Scanner.get().totalNumberOfFiles} for a total size: ${Scanner.get().displayUploadSize}"
         println "totalSize ${Scanner.get().totalUploadSize}"
@@ -77,8 +79,10 @@ public class ScanCommand implements Command {
         
     }
     
-    protected Files determineSystem( CommandLine cmd ){
+    protected Files determineSystem( CommandLine cmd, File current ){
         String system = "windows";
+        
+        Files.setRoot( current );
         
         if( cmd.hasOption("t") ){
             system = cmd.getOptionValue("t");
@@ -89,15 +93,13 @@ public class ScanCommand implements Command {
         return Files.get( system );
     }
     
-    protected File determineStart( CommandLine cmd, Files filter ){
+    protected File determineStart( CommandLine cmd ){
         
-        File current = new File( System.getProperty("user.home") )
+        File current = null;//new File( System.getProperty("user.home") )
         
         if( cmd.hasOption("s") ){
             current = new File( cmd.getOptionValue("s") );
-        }//else{
-           // current = new File( "." );
-        //}        
+        }     
         
         return current
     }

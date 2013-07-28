@@ -13,6 +13,7 @@ import org.apache.commons.cli.CommandLine
 import org.apache.commons.cli.CommandLineParser
 import org.apache.commons.cli.PosixParser
 import org.apache.commons.cli.Options;
+import com.amazonaws.services.s3.AmazonS3
 /**
  *
  * @author daviddale
@@ -54,18 +55,40 @@ public class S3ListCommand implements Command{
         
         String orderNumber = cmd.getOptionValue("o")
         
-        ListObjectsRequest list = new ListObjectsRequest()
+        ListObjectsRequest listRequest = new ListObjectsRequest()
         .withBucketName( orderNumber )
+        
+        
+        AmazonS3 client = (AmazonS3) Registry.get().lookupObject("client");
         ObjectListing objectListing;
         long count = 0l;
         long size = 0l;
+        
+        objectListing = client.listObjects( listRequest );
+        
         for( S3ObjectSummary obejctSummary: objectListing.getObjectSummaries() ){
             count++;
             size += objectSummary.getSize()
         }
         
+        listRequest.setMarker( objectListing.getNextMarker() );
+        
+        while( objectListing.isTruncated() ){
+            objectListing = client.listObjects( listRequest );
+
+            for( S3ObjectSummary obejctSummary: objectListing.getObjectSummaries() ){
+                count++;
+                size += objectSummary.getSize()
+            }
+
+            listRequest.setMarker( objectListing.getNextMarker() );            
+        }
+
+        
         println "Bucket contains ${count} objects"
         println "Bucket has a total size of ${FileUtils.byteCountToDisplaySize( size )}"
     }	
+    
+    
 }
 

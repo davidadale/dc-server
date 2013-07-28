@@ -56,6 +56,10 @@ public class Registry {
         return this;
     }
     
+    public Object lookupObject( String key ){
+        return camelRegistry.get( "key" )
+    }
+    
     public static Registry get(){
         
         if( instance ==  null ){

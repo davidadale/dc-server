@@ -66,7 +66,7 @@ public class S3ListCommand implements Command{
         
         objectListing = client.listObjects( listRequest );
         
-        for( S3ObjectSummary obejctSummary: objectListing.getObjectSummaries() ){
+        for( S3ObjectSummary objectSummary: objectListing.getObjectSummaries() ){
             count++;
             size += objectSummary.getSize()
         }
@@ -76,7 +76,7 @@ public class S3ListCommand implements Command{
         while( objectListing.isTruncated() ){
             objectListing = client.listObjects( listRequest );
 
-            for( S3ObjectSummary obejctSummary: objectListing.getObjectSummaries() ){
+            for( S3ObjectSummary objectSummary: objectListing.getObjectSummaries() ){
                 count++;
                 size += objectSummary.getSize()
             }

@@ -57,7 +57,7 @@ public class Registry {
     }
     
     public Object lookupObject( String key ){
-        return camelRegistry.get( "key" )
+        return camelRegistry.lookup( key )
     }
     
     public static Registry get(){

@@ -2,7 +2,10 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.flow7.dc.server;
+package net.flow7.dc.server
+
+import org.apache.commons.cli.HelpFormatter
+import org.apache.commons.cli.Options;
 
 /**
  *
@@ -10,39 +13,29 @@ package net.flow7.dc.server;
  */
 public class HelpCommand implements Command {
 
-    
-    
-    
-    @Override
-    public boolean handles(String word) {
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        return false;
+    Options options;
+
+    public HelpCommand(){
+        options = new Options();
     }
+
 
     @Override
     public void hint() {
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void perform(CommandCallback callback) {
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        HelpFormatter formatter = new HelpFormatter();
+        formatter.printHelp("help command", options);
     }
 
     @Override
     public boolean process(String line) throws Exception {
-       String[] values = line.split(" ");
-       if( values.length > 1 ){
-           
-           String command = values[1];           
-           Registry.get().lookupCommand( command ).hint();
-       
+
+        String[] values = line.split(" ");
+
+        if( values.length > 1 ){
+           String command = values[1];
+           SystemRegistry.get().lookupCommand( command ).hint();
        }else{
-           
-           for( Command command: Registry.get().getCommands() ){
-               command.hint();
-           }
-           
+           hint();
        }
        
        return true;

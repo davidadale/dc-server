@@ -8,6 +8,7 @@ package net.flow7.dc.server
 import com.amazonaws.services.s3.model.ListObjectsRequest
 import com.amazonaws.services.s3.model.ObjectListing
 import com.amazonaws.services.s3.model.S3ObjectSummary
+import org.apache.commons.cli.HelpFormatter
 import org.apache.commons.io.FileUtils
 import org.apache.commons.cli.CommandLine
 import org.apache.commons.cli.CommandLineParser
@@ -26,22 +27,15 @@ public class S3ListCommand implements Command{
         options = new Options();   
         options.addOption( "o", "order", true, "Required, a valid order number." );
     }
-    
-    public boolean handles(String word){
-        return "list".equals( word )
-    }
 
+    @Override
     public void hint(){
-        // do this later.
+        HelpFormatter formatter = new HelpFormatter();
+        formatter.printHelp("list [OPTIONS]", options);
+
     }
 
-    public void perform(CommandCallback callback){
-        // hmmm.... not for sure.
-        
-        
-    }
-
-    // push -u david@flow7.net -p
+    @Override
     public boolean process(String line) throws Exception{
         String[] args = line.split(" ");
         
@@ -59,7 +53,7 @@ public class S3ListCommand implements Command{
         .withBucketName( orderNumber )
         
         
-        AmazonS3 client = (AmazonS3) Registry.get().lookupObject("client");
+        AmazonS3 client = (AmazonS3) SystemRegistry.get().lookupObject("client");
         ObjectListing objectListing;
         long count = 0l;
         long size = 0l;

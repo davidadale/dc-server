@@ -6,56 +6,65 @@ package net.flow7.dc.server;
 
 import net.flow7.dc.server.ext.*;
 import org.apache.camel.component.aws.s3.*
+import org.apache.commons.cli.HelpFormatter
+import org.apache.commons.cli.Options
+import org.apache.commons.io.IOUtils
+import com.google.common.io.ByteStreams
+
+import java.security.MessageDigest
 
 /**
  *
  * @author daviddale
  */
-public class SimplePushCommand implements Command {
+public class SimplePushCommand extends AbstractCommand {
 
-    @Override
-    public boolean handles(String word) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    Options options;
+
+    public SimplePushCommand(){
+        options = new Options();
+        options.addOption( "o", "order", true, "Optional, a valid order number. Maybe be set at time of scanning." );
     }
 
     @Override
     public void hint() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void perform(CommandCallback callback) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        HelpFormatter formatter = new HelpFormatter();
+        formatter.printHelp("push [OPTIONS]", options);
     }
 
     @Override
     public boolean process(String line) throws Exception {
         
         String order = Scanner.get().getOrderNumber();
-        String bucket = "dc-${order}"
-        
+
         if( !order ){
-            throw new RuntimeException("Missing order number. Try rescanning the data.");
+            order = getCommandLine( line, options ).getOptionValue("o")
         }
-        
-        Registry.get().getContext().addRoutes( Routes.toAmazon("${bucket}") ) 
-        Registry.get().getContext().startRoute( bucket )
-        def producerTemplate = Registry.get().getContext().createProducerTemplate();
+
+        if( !order ){
+            throw new ServerException("Order number must be set before pushing files to cloud.")
+        }
+
+        SystemRegistry.get().getContext().addRoutes( Routes.toAmazon( order )  )
+        SystemRegistry.get().getContext().startRoute( order )
+
+        def producerTemplate = SystemRegistry.get().getContext().createProducerTemplate();
         
         List<File> files = Scanner.get().getStaged();
+
+
+
         files.each{ file ->
-            //producerTemplate shove file onto queue
-            println "File to transfer: ${file.path}"//.setHeader(S3Constants.KEY, header("CamelFileNameOnly") )
-            
+
             HashMap<String,Object> headers = new HashMap<String,Object>();
-            headers.put( S3Constants.KEY,file.name );
-            headers.put( S3Constants.CONTENT_LENGTH, new Long( file.length() ) );
-            
-            producerTemplate.sendBodyAndHeaders("seda:${bucket}", file, headers );
+            headers.put( S3Constants.BUCKET_NAME, order )
+            headers.put( S3Constants.KEY, UUID.randomUUID().toString()  );
+            headers.put( "DC_FILENAME", file.getName() )
+            headers.put( "DC_FILEPATH", file.getCanonicalPath() )
+            producerTemplate.sendBodyAndHeaders("seda:${order}", file, headers );
 
         }
-        
-        //Registry.get().getContext().stopRoute( bucket )
+
         return true
     }
     

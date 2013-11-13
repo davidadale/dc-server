@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.flow7.dc.server;
+package net.flow7.dc.server
 
+import org.apache.camel.Exchange
+import org.apache.camel.component.aws.s3.S3Constants;
 import org.apache.camel.spi.DataFormat;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.AutoDetectParser;
@@ -25,21 +27,15 @@ import org.apache.tika.sax.BodyContentHandler;
  * @author daviddale
  */
 public class TikaTranslator {
-    
-    
-    DataFormat tika;
-    Metadata metadata;
-    BodyContentHandler handler;
-    AutoDetectParser parser;
-    
+
     public TikaTranslator(){
-            
-            metadata = new Metadata();
- 
-            handler = new BodyContentHandler(10*1024*1024);
-            parser = new AutoDetectParser();       
- 
-            //parser.parse(input, handler, metadata);        
+
+    }
+
+    public void process(Exchange exchange){
+        Map headers = exchange.getIn().getHeaders()
+        String type = (String) headers.get("TikaContentType")
+        headers.put( S3Constants.CONTENT_TYPE, type )
     }
     
     

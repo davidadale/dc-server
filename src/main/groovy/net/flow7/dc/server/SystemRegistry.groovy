@@ -2,49 +2,54 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.flow7.dc.server;
+package net.flow7.dc.server
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 import org.apache.camel.impl.SimpleRegistry
 import org.apache.camel.builder.RouteBuilder
 import org.apache.camel.CamelContext
 import org.apache.camel.impl.DefaultCamelContext
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 /**
- *
+ * This is a runtime version of configuration and beans. A place
+ * to register instances of objects for easy access from other parts
+ * in the application.
  * @author daviddale
  */
-public class Registry {
-    
-    static Registry instance;
-    
+public class SystemRegistry {
+
+    // singleton instance
+    static SystemRegistry instance;
+
+    //
     Map<String,Class> registered = new HashMap<String,Class>();
     CamelContext context = null;
     SimpleRegistry camelRegistry = null;
+
+    Logger log = LoggerFactory.getLogger( SystemRegistry.class )
+
     
-    private Registry(){
+    private SystemRegistry(){
         
     }
 
     protected CamelContext getContext(){
         if( context == null ){
             context = new DefaultCamelContext();
-            context.getExecutorServiceStrategy().getDefaultThreadPoolProfile().setMaxPoolSize(50)
+            context.getExecutorServiceManager().getDefaultThreadPoolProfile().setMaxPoolSize(50)
         }
         return context;
     }
     
-    public Registry addRoutes(RouteBuilder builder){
+    public SystemRegistry addRoutes(RouteBuilder builder){
         
         getContext().addRoutes( builder );
         return this;
         
     }
     
-    public Registry bind(String key, Object object){
+    public SystemRegistry bind(String key, Object object){
         
         if( camelRegistry == null ){
             camelRegistry = new SimpleRegistry();
@@ -60,10 +65,10 @@ public class Registry {
         return camelRegistry.lookup( key )
     }
     
-    public static Registry get(){
+    public static SystemRegistry get(){
         
         if( instance ==  null ){
-            instance = new Registry();
+            instance = new SystemRegistry();
         }
         return instance;
         
@@ -76,20 +81,18 @@ public class Registry {
     }
     
     public List<Command> getCommands(){
+
         List<Command> commands = new LinkedList<Command>();
+
         for( String key: registered.keySet() ){
 
             try{
-                
                 commands.add( lookupCommand( key ) );
-                
             }catch(Exception e){
-                
+                log.error("Problem registering commands...", e )
             }
-            
         }
-        
-        
+
         return commands;
     }
     

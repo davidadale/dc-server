@@ -34,9 +34,12 @@ public abstract class Files {
        
         return instance;
     }
-    
+
     public File startScanAt(){
-        return new File( rootedAt, getStartLocation() );
+println "Started scan ===========> rootedAt ${rootedAt}"
+println "Start Location =========> ${getStartLocation()}"
+        String fullPath = rootedAt.getCanonicalPath() + getStartLocation()
+        return new File( fullPath.endsWith("/")?fullPath.substring( 0, fullPath.length() - 1 ):fullPath );
     }
     
     

@@ -5,7 +5,6 @@
 
 package net.flow7.dc.server;
 
-import java.io.File;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -17,70 +16,46 @@ import net.flow7.dc.server.ext.Scanner;
  *
  * @author daviddale
  */
-public class ScanCommand implements Command {
-    
-    String longOpt = "scan";
+public class ScanCommand extends AbstractCommand {
+
     Options options;
     
     public ScanCommand(){
         options = new Options();   
-        options.addOption( "o", "order", true, "Required, a valid order number." );
+        options.addOption( "o", "order", true, "Optional, a valid order number." );
         options.addOption( "s", "start", true,  "Optional, start the scan at this location. Defaults current directory." );
         options.addOption( "t", "type", true, "Optional, type of operating system ( mac, windows ). Will try and guess OS." );    
-    }
-    
-    
-    @Override
-    public boolean handles(String word) {
-        return "scan".equals(word);
     }
 
     @Override
     public void hint() {
         HelpFormatter formatter = new HelpFormatter();
         formatter.printHelp("scan -o xxxxx [OPTIONS]", options);        
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    @Override
-    public void perform(CommandCallback callback) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 
     @Override
     public boolean process(String line) throws Exception {
-        String[] args = line.split(" ");        
-        
-        CommandLineParser parser = new PosixParser();
-        CommandLine cmd = parser.parse(options, args);
-        
-        // require the order option
-        if( !cmd.hasOption("o") ){
-            return false
-        }
-        
-        String orderNumber = cmd.getOptionValue("o")
-        
-        
-        File current = determineStart( cmd );
-        Files filter = determineSystem( cmd, current )        
-        
-        
-        println "System Scanning: ${filter.systemName}"
-        
-        Scanner.get().scan( orderNumber, filter.startScanAt() , filter.getIgnoreDirs(), filter.getNamePattern() );
 
-        println "number of documents found ${Scanner.get().totalNumberOfFiles} for a total size: ${Scanner.get().displayUploadSize}"
-        println "totalSize ${Scanner.get().totalUploadSize}"
-        return true; 
+        CommandLine cmd = getCommandLine(line, options);
+        Files filter = determineSystem( cmd, determineStart( cmd ) )
+
+        Scanner.get().scan( cmd.getOptionValue("o") ,
+                            filter.startScanAt() ,
+                            filter.getIgnoreDirs(),
+                            filter.getNamePattern() );
+
+        return true;
     }
-    
-    protected boolean validateOrder( String order ){
-        
-    }
-    
+
+    /**
+     * Return the type of System Mac or Windows (the only supported systems right now)
+     * @param cmd
+     * @param current
+     * @return
+     */
     protected Files determineSystem( CommandLine cmd, File current ){
-        String system = "windows";
+        String system;
         
         Files.setRoot( current );
         
@@ -92,11 +67,18 @@ public class ScanCommand implements Command {
         
         return Files.get( system );
     }
-    
+
+    /**
+     * Create a File that points the root of the scanner.
+     * @param cmd
+     * @return
+     */
     protected File determineStart( CommandLine cmd ){
-        
-        File current = null;//new File( System.getProperty("user.home") )
-        
+
+        // Use current directory by default
+        File current = new File( System.getProperty("user.dir") )
+
+        // in included mount at a different location
         if( cmd.hasOption("s") ){
             current = new File( cmd.getOptionValue("s") );
         }     

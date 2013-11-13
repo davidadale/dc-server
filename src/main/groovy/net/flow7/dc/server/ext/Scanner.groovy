@@ -39,11 +39,7 @@ public class Scanner {
     public String getOrderNumber(){
         return this.orderNumber;
     }
-    
-    public void setOrderNumber(String orderNo ){
-        this.orderNumber = orderNo;
-    }
-    
+
     public void stage( File file ){
         totalSize += file.length();
         staged.add( file );
@@ -85,18 +81,14 @@ public class Scanner {
         def start = new Date();
         
         new File("dc-files.txt").withWriter { out ->
-        
-        // look into this later.
-        //excludeNameFilter: filter.excludeNames
-        current.traverse(
-            type: FILES,
-            preDir:{ if( ignore.contains(it.name) || it.name.startsWith(".") ){ return SKIP_SUBTREE } },
-            nameFilter: namePattern ){
-                out << "${it}\n"
-                println "${it}"
-                stage( it )
-            }
-            
+            current.traverse(
+                type: FILES,
+                preDir:{ if( ignore.contains(it.name) || it.name.startsWith(".") ){ return SKIP_SUBTREE } },
+                nameFilter: namePattern ){
+                    out << "${it}\n"
+                    println "${it.absolutePath - current.absolutePath}"
+                    stage( it )
+                }
         }
         println "Scan started at ${start}"    
         println "Scan completed at ${ new Date() }"    

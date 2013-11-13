@@ -1,5 +1,6 @@
 apply plugin: 'groovy'
 apply plugin: 'application'
+apply plugin: 'idea'
 
 repositories{
     mavenCentral()
@@ -14,18 +15,19 @@ dependencies{
     compile 'org.apache.camel:camel-aws:2.11.0'
     compile 'org.apache.camel:camel-http:2.11.0'
     compile 'commons-cli:commons-cli:1.2'
-    compile 'org.apache.camel:camel-tika:0.2'
-    //compile 'org.apache.camel:camel-printer:2.9.2'
     compile 'org.apache.tika:tika-core:1.2'
     compile 'org.apache.tika:tika-parsers:1.2'
     compile 'org.apache.pdfbox:pdfbox:1.7.1'
     compile 'org.slf4j:slf4j-api:1.7.5'
     compile 'org.slf4j:slf4j-log4j12:1.7.5'
-    //compile 'org.slf4j:slf4j-jdk14:1.7.5'
     compile 'jline:jline:2.11'
     compile 'commons-io:commons-io:2.4'
+    compile 'org.yaml:snakeyaml:1.12'
+    compile 'com.google.guava:guava:r09'
     testCompile 'org.apache.camel:camel-test:2.11.0'
     testCompile 'junit:junit:4.10'
+    testCompile 'org.mockito:mockito-core:1.9.5'
+
 }
 
 jar {

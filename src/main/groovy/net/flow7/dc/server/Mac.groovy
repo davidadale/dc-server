@@ -25,11 +25,13 @@ public class Mac extends Files {
     public List getIgnoreDirs() {
         return ignore;
     }
-    
+
+    @Override
     public String getStartLocation(){
         return System.getProperty("user.home")
     }
-    
+
+    @Override
     public String getSystemName(){
         return "Macintosh"
     }

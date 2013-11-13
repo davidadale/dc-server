@@ -15,22 +15,23 @@
  */
 package net.flow7.dc.server;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.amazonaws.auth.AWSCredentialsProvider
-import com.amazonaws.auth.EnvironmentVariableCredentialsProvider 
+
 /**
+ * A helper utility class to retrieve configuration properties.
  *
  * @author daviddale
  */
 public class Config {
     
     Logger log = LoggerFactory.getLogger(Config.class);
+
     Properties props;
+
     File homeDir;
+
     static File configFile;
     
     static Config instance = null;
@@ -46,10 +47,21 @@ public class Config {
         }
         return instance;
     }
-    
+
+    /**
+     * Construct a new config object setting the home directory to the
+     * users home directory and a directory called .drivecleaners. It will
+     * create this directory if it doesn't exist.
+     *
+     * Set the configuration file to the dc.config file in the home directory.
+     * Create the config file if it doesn't exist.  This is just a simple
+     * Java Properties file.
+     *
+     */
     private Config(){        
         
-        homeDir = new File( new File(System.getProperty("user.home")), ".drivecleaners" );        
+        homeDir = new File( new File( System.getProperty("user.home") ), ".drivecleaners" );
+
         if( !homeDir.exists() ){
             homeDir.mkdir();
         }
@@ -61,19 +73,20 @@ public class Config {
             }            
         }
 
-        
         props = new Properties();
+
         load();
+
     }
     
     public AWSCredentialsProvider getCredentialsProvider(){
         Object obj = null;
         try{
-            Class impl = Class.forName(prop("credentials.provider","com.amazonaws.auth.SystemPropertiesCredentialsProvider")); 
+            Class impl = Class.forName(prop("credentials.provider","com.amazonaws.auth.EnvironmentVariableCredentialsProvider"));
             obj = impl.newInstance();
             
         }catch(Exception e ){
-            log.error("errored trying to create the authentication object. err: " + e.getMessage() );
+            log.error("error trying to create the authentication object. err: " + e.getMessage() );
             return null;
         }
         return (AWSCredentialsProvider)obj;
@@ -86,7 +99,9 @@ public class Config {
             
         }
     }
-    
+    /**
+     * Load the properties from the dc.config file.
+      */
     protected final void load(){
         try{
             //InputStream is = this.getClass().getClassLoader().getResourceAsStream("server.conf"); 
@@ -96,7 +111,12 @@ public class Config {
             log.error("error trying to find the configuration file, server.conf", e);
         }
     }
-    
+
+    /**
+     * Utility method for returning an Integer from the settings in dc.config
+     * @param key
+     * @return
+     */
     public Integer getNumber( String key ){
         try{
             return Integer.valueOf( prop( key ) );
@@ -104,7 +124,13 @@ public class Config {
             return 0;
         }
     }
-    
+
+    /**
+     * Utility method for returning an Integer form dc.config setting to default value if not set.
+     * @param key
+     * @param defaultValue
+     * @return
+     */
     public Integer getInt(String key, int defaultValue ){
         try{
             return Integer.valueOf( prop( key ) );
@@ -138,13 +164,7 @@ public class Config {
         
         return result;
     }
-    
-    
-    
-    public String[] values(String key){
-        return props.getProperty(key).split(",");
-    }
-    
+
     
     /**
      * Returns the environment variable if set.
@@ -155,13 +175,11 @@ public class Config {
         return System.getenv( key );
     }
 
-    public void printConfig(){
-       /* Set<String> props = props.string
-        for(String prop: props ){
-            System.out.println("Property is " + prop );
-        }*/
-    }
-    
+
+    /**
+     * Set the file to use that will house the configurations
+     * @param file
+     */
     public static void setConfigFile(File file){
         configFile = file;
     }

@@ -15,91 +15,88 @@
  */
 package net.flow7.dc.server
 
-import java.io.File
-import java.io.PrintWriter
-import java.util.HashMap
-import java.util.Map
 import jline.console.ConsoleReader
 import org.apache.commons.cli.CommandLine
 import org.apache.commons.cli.CommandLineParser
-import org.apache.commons.cli.HelpFormatter
 import org.apache.commons.cli.Options
 import org.apache.commons.cli.PosixParser
 import com.amazonaws.services.s3.AmazonS3
 import com.amazonaws.services.s3.AmazonS3Client
-import org.apache.camel.CamelContext
-import org.apache.camel.impl.DefaultCamelContext
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import com.amazonaws.ClientConfiguration
 
 /**
- *
+ * This is the main class and will start up the client.
  * @author daviddale
  */
 public class Server {
     
-    
+    // options for the server
     static Options options;
+
+    // singleton instance of server
     Server server;
-    
-    Registry registry;
+
+    // a registry of object instances
+    SystemRegistry registry;
+
     static Logger logger = LoggerFactory.getLogger( Server.class );
     
     
     public Server() {
-        
-        log("Server starting to scan directories.");        
-        
+
+        logger.info( "Server starting to scan directories." )
+
         Map commands = new HashMap();
         
-        commands.put( "scan", Config.get().prop("command.scan","net.flow7.dc.server.ScanCommand") );
-        commands.put( "copy", Config.get().prop("command.copy","net.flow7.dc.server.CopyCommand") );
-        commands.put( "push", Config.get().prop("command.push","net.flow7.dc.server.SimplePushCommand") );
-        commands.put( "list", Config.get().prop("command.list","net.flow7.dc.server.S3ListCommand"));
-        commands.put( "help", "net.flow7.dc.server.HelpCommand" );
-        
-        
-        
+        commands.put( "scan", Config.get().prop("command.scan","net.flow7.dc.server.ScanCommand") )
+        commands.put( "push", Config.get().prop("command.push","net.flow7.dc.server.SimplePushCommand") )
+        commands.put( "list", Config.get().prop("command.list","net.flow7.dc.server.S3ListCommand") )
+        commands.put( "help", Config.get().prop("command.help","net.flow7.dc.server.HelpCommand" ) )
+
+        // get the socket time out for the network calls when pushing to Amazon (defaults to 10 minutes)
         Integer socketTimeout = Config.get().getInt( "socketTimeout", 600000 );
-        
+
+        // Amazon client configuration with a default time out of 10 minutes
         ClientConfiguration clientConfig = new ClientConfiguration();
         clientConfig.setSocketTimeout( socketTimeout ); // wait 10 by default.
-        
-        log( "Socket timeout is set to: %s", socketTimeout );
-        
+
+        logger.debug( "Socket timeout is set to: %s", socketTimeout  )
+
         // create an amazon client 
-        AmazonS3 client = new AmazonS3Client( Config.get().getCredentialsProvider(), clientConfig );        
-        Registry.get().bind( "client", client )
-        Registry.get().getContext().start()
-        
+        AmazonS3 client = new AmazonS3Client( Config.get().getCredentialsProvider(), clientConfig );
+
+        // register a few objects for use later on
+        SystemRegistry.get().bind( "client", client )
+        SystemRegistry.get().bind( "index", new IndexWriter() )
+        SystemRegistry.get().bind( "translator", new TikaTranslator() )
+        SystemRegistry.get().bind( "bucket", new Bucket() )
+
+        // start the camel context
+        SystemRegistry.get().getContext().start()
+
         try{
+            // this registers all the available commands for the
+            // command line
+            SystemRegistry.get().register( commands );
             
-            Registry.get().register( commands );
-            
-        }catch(Exception e){
-            // handle
+        }catch( ClassNotFoundException e ){
+            logger.error( "Missing class for command.", e )
         }
         
-    }
-
-    private void log(String msg, Object... args) {
-
-        if (args != null) {
-            System.out.println(String.format(msg, (Object[]) args));
-        } else {
-            System.out.println(msg);
-        }
-
     }
 
     public static void main(String[] args) throws Exception {
-        
+
+        // options to configure the local server
         options = new Options();
         options.addOption("f", "file", true, "External configuration file.");
 
+        // command line parser
         CommandLineParser parser = new PosixParser();
         CommandLine cmdLine = parser.parse(options, args);
+
 
         if ( cmdLine.hasOption("f") ) {
             
@@ -110,7 +107,7 @@ public class Server {
             if( !file.exists() ){
                 throw new RuntimeException("The file specified doesn't exist.");
             }            
-            
+
             Config.setConfigFile( file );
             
         }        
@@ -118,17 +115,16 @@ public class Server {
         Server server = new Server();
         
         ConsoleReader reader = new ConsoleReader();
-        reader.setBellEnabled(false);
+        reader.setBellEnabled( false );
         reader.setHistoryEnabled( true );
         
         String line;
-        PrintWriter out = new PrintWriter( System.out );        
-        
+
+        // Server Loop to query in the commands from user.
         while ((line = reader.readLine("prompt> ")) != null) {
             
             Command cmd = server.findCommand( line );
-            
-            
+
             if( cmd!=null ){               
                
                 try{
@@ -136,15 +132,18 @@ public class Server {
                         cmd.hint()
                     }                    
                 }catch(Exception e ){
-                    System.out.println( "Error: ${e.message}" )
-                    e.printStackTrace()
+
+                    logger.error("Error executing command. err: " + e.getMessage(), e )
+
                 }
 
             }
             
             if (line.equalsIgnoreCase("quit") || line.equalsIgnoreCase("exit")) {
-                Registry.get().getContext().stop()
+
+                SystemRegistry.get().getContext().stop()
                 break;
+
             }            
         }
 
@@ -153,18 +152,15 @@ public class Server {
     public Command findCommand(String line ){
         try{
             
-          return Registry.get().parse( line );  
+          return SystemRegistry.get().parse( line );
         
         }catch(Exception e){
             // handle exception
-            e.printStackTrace();
+            logger.error( "Error finding command. err: " + e.getMessage() )
+
         }
         
         return null;
     }
 
-    private static void printHelp() {
-        HelpFormatter formatter = new HelpFormatter();
-        formatter.printHelp("cytoscape.{sh|bat} [OPTIONS]", options);
-    }
 }

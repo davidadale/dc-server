@@ -35,7 +35,7 @@ public class Routes {
 
     
     public static RouteBuilder toAmazon( String orderNumber ){
-        int workers = Config.get().getNumber( "workers" );
+        int workers = Config.get().getInt( "workers", 1 );
         return new AmazonRoute( orderNumber, workers );
     }
     
@@ -81,10 +81,10 @@ System.out.println("Current Directory found " + currentDirectory.getCanonicalPat
         try {
 
             context = new JndiContext();
-            context.bind("website", new DocumentPoster());
+            context.bind("website", new IndexWriter());
 
         } catch (Exception e) {
-            log.error(String.format(" couldn't register DocumentPoster. err: %s", e.getMessage()));
+            log.error(String.format(" couldn't register IndexWriter. err: %s", e.getMessage()));
             System.exit(1);
         }*/
 

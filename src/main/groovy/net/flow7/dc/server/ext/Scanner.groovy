@@ -80,16 +80,16 @@ public class Scanner {
         
         def start = new Date();
         
-        new File("dc-files.txt").withWriter { out ->
+        //new File("dc-files.txt").withWriter { out ->
             current.traverse(
                 type: FILES,
                 preDir:{ if( ignore.contains(it.name) || it.name.startsWith(".") ){ return SKIP_SUBTREE } },
                 nameFilter: namePattern ){
-                    out << "${it}\n"
-                    println "${it.absolutePath - current.absolutePath}"
+                    //out << "${it}\n"
+                    //println "${it.absolutePath - current.absolutePath}"
                     stage( it )
                 }
-        }
+        //}
         println "Scan started at ${start}"    
         println "Scan completed at ${ new Date() }"    
     }

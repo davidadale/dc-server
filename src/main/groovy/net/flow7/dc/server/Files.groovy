@@ -36,8 +36,6 @@ public abstract class Files {
     }
 
     public File startScanAt(){
-println "Started scan ===========> rootedAt ${rootedAt}"
-println "Start Location =========> ${getStartLocation()}"
         String fullPath = rootedAt.getCanonicalPath() + getStartLocation()
         return new File( fullPath.endsWith("/")?fullPath.substring( 0, fullPath.length() - 1 ):fullPath );
     }

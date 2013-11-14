@@ -45,6 +45,8 @@ public class ScanCommand extends AbstractCommand {
                             filter.getIgnoreDirs(),
                             filter.getNamePattern() );
 
+        println "Total Scan Size: ${Scanner.get().getDisplayUploadSize()}"
+
         return true;
     }
 

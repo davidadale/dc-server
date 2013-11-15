@@ -35,6 +35,7 @@ class AmazonRoute extends RouteBuilder{
     public void configure() throws Exception{
         
         errorHandler( deadLetterChannel( "log:errorLog?level=ERROR" ).useOriginalMessage()
+                .maximumRedeliveries(3).maximumRedeliveryDelay(5000)
                 .logStackTrace(true).retryAttemptedLogLevel( LoggingLevel.INFO )  )
 
         from(  "seda:${orderNumber}"  ).routeId(  "${orderNumber}"   )

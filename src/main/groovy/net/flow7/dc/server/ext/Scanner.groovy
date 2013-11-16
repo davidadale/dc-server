@@ -9,6 +9,7 @@ import static groovy.io.FileType.FILES
 import static groovy.io.FileVisitResult.*
 import org.apache.commons.io.FileUtils
 import java.util.regex.Pattern
+import net.flow7.dc.server.*
 
 //import org.apache.commons.io.FileUtils;
 /**
@@ -24,6 +25,8 @@ public class Scanner {
     Long totalSize = 0;
     
     String orderNumber;
+
+    Files filter;
     
     private Scanner(){
         staged = [];
@@ -34,6 +37,10 @@ public class Scanner {
             instance = new Scanner();
         }
         return instance;
+    }
+
+    public void setFiles( Files filter ){
+        this.filter = filter;
     }
     
     public String getOrderNumber(){
@@ -52,6 +59,10 @@ public class Scanner {
     
     public Integer getTotalNumberOfFiles(){
         return staged?.size()?:0;
+    }
+
+    public String getRelativePath(File file){
+        return file.getCanonicalPath() - filter.startScanAt()
     }
     
     public Long getTotalUploadSize(){
@@ -72,14 +83,18 @@ public class Scanner {
         orderNumber = ""
     }
     
-    public void scan(String orderNumber, File current, List ignore, Pattern namePattern){
+    public void scan( String orderNumber ){
         
         clear()
         
         this.orderNumber = orderNumber
         
         def start = new Date();
-        
+
+        File current = filter.startScanAt();
+        List ignore = filter.getIgnoreDirs();
+        Pattern namePattern = filter.getNamePattern();
+
         //new File("dc-files.txt").withWriter { out ->
             current.traverse(
                 type: FILES,

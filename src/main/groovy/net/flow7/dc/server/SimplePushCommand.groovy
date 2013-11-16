@@ -52,7 +52,7 @@ public class SimplePushCommand extends AbstractCommand {
         
         List<File> files = Scanner.get().getStaged();
 
-
+        Scanner scanner = Scanner.get()
 
         files.each{ file ->
 
@@ -60,7 +60,7 @@ public class SimplePushCommand extends AbstractCommand {
             headers.put( S3Constants.BUCKET_NAME, order )
             headers.put( S3Constants.KEY, UUID.randomUUID().toString()  );
             headers.put( "DC_FILENAME", file.getName() )
-            headers.put( "DC_FILEPATH", file.getCanonicalPath() )
+            headers.put( "DC_FILEPATH", scanner.getRelativePath( file ) )
             producerTemplate.sendBodyAndHeaders("seda:${order}", file, headers );
 
         }

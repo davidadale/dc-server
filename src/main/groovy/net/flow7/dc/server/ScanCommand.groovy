@@ -40,10 +40,8 @@ public class ScanCommand extends AbstractCommand {
         CommandLine cmd = getCommandLine(line, options);
         Files filter = determineSystem( cmd, determineStart( cmd ) )
 
-        Scanner.get().scan( cmd.getOptionValue("o") ,
-                            filter.startScanAt() ,
-                            filter.getIgnoreDirs(),
-                            filter.getNamePattern() );
+        Scanner.get().setFiles( filter )
+        Scanner.get().scan( cmd.getOptionValue("o") );
 
         println "Total Scan Size: ${Scanner.get().getDisplayUploadSize()}"
 

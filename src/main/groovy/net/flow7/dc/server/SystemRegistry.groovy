@@ -4,6 +4,7 @@
  */
 package net.flow7.dc.server
 
+import org.apache.camel.ProducerTemplate
 import org.apache.camel.impl.SimpleRegistry
 import org.apache.camel.builder.RouteBuilder
 import org.apache.camel.CamelContext
@@ -22,6 +23,8 @@ public class SystemRegistry {
     // singleton instance
     static SystemRegistry instance;
 
+    ProducerTemplate producerTemplate;
+
     //
     Map<String,Class> registered = new HashMap<String,Class>();
     CamelContext context = null;
@@ -31,7 +34,7 @@ public class SystemRegistry {
 
     
     private SystemRegistry(){
-        
+        producerTemplate = getContext().createProducerTemplate()
     }
 
     protected CamelContext getContext(){
@@ -40,6 +43,10 @@ public class SystemRegistry {
             context.getExecutorServiceManager().getDefaultThreadPoolProfile().setMaxPoolSize(50)
         }
         return context;
+    }
+
+    public ProducerTemplate getProducerTemplate(){
+        return producerTemplate
     }
     
     public SystemRegistry addRoutes(RouteBuilder builder){

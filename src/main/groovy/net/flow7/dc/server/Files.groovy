@@ -1,6 +1,8 @@
 package net.flow7.dc.server;
 
-import com.google.common.base.Joiner;
+import com.google.common.base.Joiner
+
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -170,6 +172,14 @@ public abstract class Files {
         developer.put(".jar","Java Archive file");
         developer.put(".groovy","Groovy source code");
         
+
+    }
+
+    public static String readableFileSize( long size ){
+        if(size<=0){ return "0" }
+        final String[] units = ["B","KB","MB","GB","TB"].toArray( new String[0] )
+        int digitGroups = (int) ( Math.log10(size)/Math.log10(1024) )
+        return new DecimalFormat("#,##0.#").format(size/Math.pow(1024,digitGroups) ) + " " + units[digitGroups]
 
     }
 

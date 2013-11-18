@@ -34,34 +34,49 @@ public class SimplePushCommand extends AbstractCommand {
 
     @Override
     public boolean process(String line) throws Exception {
-        
-        String order = Scanner.get().getOrderNumber();
+
+        String order = getCommandLine( line, options ).getOptionValue("o")
 
         if( !order ){
-            order = getCommandLine( line, options ).getOptionValue("o")
+            order = Scanner.get().getOrderNumber();
         }
 
         if( !order ){
-            throw new ServerException("Order number must be set before pushing files to cloud.")
+           return false
         }
-
-        SystemRegistry.get().getContext().addRoutes( Routes.toAmazon( order )  )
-        SystemRegistry.get().getContext().startRoute( order )
-
-        def producerTemplate = SystemRegistry.get().getContext().createProducerTemplate();
-        
-        List<File> files = Scanner.get().getStaged();
 
         Scanner scanner = Scanner.get()
 
-        files.each{ file ->
+        List<File> files = scanner.getStaged();
 
-            HashMap<String,Object> headers = new HashMap<String,Object>();
-            headers.put( S3Constants.BUCKET_NAME, order )
-            headers.put( S3Constants.KEY, UUID.randomUUID().toString()  );
-            headers.put( "DC_FILENAME", file.getName() )
-            headers.put( "DC_FILEPATH", scanner.getRelativePath( file ) )
-            producerTemplate.sendBodyAndHeaders("seda:${order}", file, headers );
+        if( !files ){
+            return false
+        }
+
+        SystemRegistry registry = SystemRegistry.get()
+
+
+        registry.getContext().addRoutes( Routes.toAmazon( order )  )
+        registry.getContext().startRoute( order )
+
+        ((IndexWriter)registry.getCamelRegistry().lookup("index")).setFile( order );
+        ((Bucket)registry.getCamelRegistry().lookup("bucket")).reset()
+
+        try{
+
+            files.each{ file ->
+
+                HashMap<String,Object> headers = new HashMap<String,Object>();
+                headers.put( S3Constants.BUCKET_NAME, order )
+                headers.put( S3Constants.KEY, UUID.randomUUID().toString()  );
+                headers.put( "DC_FILENAME", file.getName() )
+                headers.put( "DC_FILEPATH", scanner.getRelativePath( file ) )
+                registry.getProducerTemplate().sendBodyAndHeaders("seda:${order}", file, headers );
+            }
+
+        }finally{
+
+            //producerTemplate.stop();
 
         }
 

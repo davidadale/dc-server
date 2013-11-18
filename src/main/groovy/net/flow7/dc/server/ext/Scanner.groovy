@@ -62,7 +62,7 @@ public class Scanner {
     }
 
     public String getRelativePath(File file){
-        return file.getCanonicalPath() - filter.startScanAt()
+        return file.getCanonicalPath() - filter.startScanAt().getCanonicalPath()
     }
     
     public Long getTotalUploadSize(){
@@ -70,7 +70,7 @@ public class Scanner {
     }
     
     public String getDisplayUploadSize(){
-        return FileUtils.byteCountToDisplaySize( totalSize );
+        return Files.readableFileSize( totalSize );
     }
     
     public List<File> getStaged(){
@@ -100,8 +100,6 @@ public class Scanner {
                 type: FILES,
                 preDir:{ if( ignore.contains(it.name) || it.name.startsWith(".") ){ return SKIP_SUBTREE } },
                 nameFilter: namePattern ){
-                    //out << "${it}\n"
-                    //println "${it.absolutePath - current.absolutePath}"
                     stage( it )
                 }
         //}

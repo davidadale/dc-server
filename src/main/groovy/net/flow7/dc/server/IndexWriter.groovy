@@ -16,9 +16,6 @@
 package net.flow7.dc.server;
 
 import org.apache.camel.Exchange;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.methods.PostMethod
 import org.yaml.snakeyaml.Yaml;
 
 /**
@@ -33,6 +30,7 @@ public class IndexWriter {
     List stuff = []
     File file = null
 
+
     public IndexWriter(){
         yaml = new Yaml()
     }
@@ -44,6 +42,12 @@ public class IndexWriter {
     public IndexWriter( Writer writer ){
         this()
         this.writer = writer
+    }
+
+    public void setFile( String order ){
+        File dir = new File( System.getProperty("user.home"), "Desktop" )
+        this.file = new File( dir, "${order}-index.yml")
+
     }
 
     protected File createFile(){

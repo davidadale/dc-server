@@ -175,6 +175,11 @@ public class Config {
         return System.getenv( key );
     }
 
+    public Boolean envAsBoolean(String key){
+        return "true".equals( env( key ) ) ||
+                "1".equals( env( key ) );
+    }
+
 
     /**
      * Set the file to use that will house the configurations

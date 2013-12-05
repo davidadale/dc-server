@@ -81,6 +81,8 @@ public class S3ListCommand implements Command{
         
         println "Bucket contains ${count} objects"
         println "Bucket has a total size of ${FileUtils.byteCountToDisplaySize( size )}"
+
+        return true
     }	
     
     

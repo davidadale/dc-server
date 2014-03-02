@@ -36,6 +36,12 @@ public class HelpCommand implements Command {
            SystemRegistry.get().lookupCommand( command ).hint();
        }else{
            hint();
+           for(Command cmd: SystemRegistry.get().commands){
+               if( !(cmd instanceof HelpCommand) ){
+                   cmd.hint()
+                   println "\n"
+               }
+           }
        }
        
        return true;

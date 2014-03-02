@@ -43,7 +43,7 @@ public class ScanCommand extends AbstractCommand {
         Scanner.get().setFiles( filter )
         Scanner.get().scan( cmd.getOptionValue("o") );
 
-        println "Total Scan Size: ${Scanner.get().getDisplayUploadSize()}"
+        println Scanner.get().getScanDetails()
 
         return true;
     }

@@ -5,6 +5,11 @@
 
 package net.flow7.dc.server.ext
 
+import org.joda.time.DateTime
+import org.joda.time.Period
+import org.joda.time.format.PeriodFormatter
+import org.joda.time.format.PeriodFormatterBuilder
+
 import static groovy.io.FileType.FILES
 import static groovy.io.FileVisitResult.*
 import org.apache.commons.io.FileUtils
@@ -27,9 +32,24 @@ public class Scanner {
     String orderNumber;
 
     Files filter;
+    PeriodFormatter daysHoursMinutes
+    DateTime startTime
+    DateTime endTime
+
+    boolean scanInProgress = false
     
     private Scanner(){
         staged = [];
+        daysHoursMinutes = new PeriodFormatterBuilder()
+                .appendDays()
+                .appendSuffix(" day", " days")
+                .appendSeparator(" and ")
+                .appendMinutes()
+                .appendSuffix(" minute", " minutes")
+                .appendSeparator(" and ")
+                .appendSeconds()
+                .appendSuffix(" second", " seconds")
+                .toFormatter();
     }
     
     public static Scanner get(){
@@ -84,28 +104,61 @@ public class Scanner {
     }
     
     public void scan( String orderNumber ){
-        
+
+        scanInProgress = true
+
         clear()
         
         this.orderNumber = orderNumber
         
-        def start = new Date();
+        startTime = new DateTime()
 
         File current = filter.startScanAt();
         List ignore = filter.getIgnoreDirs();
         Pattern namePattern = filter.getNamePattern();
 
-        //new File("dc-files.txt").withWriter { out ->
-            current.traverse(
-                type: FILES,
-                preDir:{ if( ignore.contains(it.name) || it.name.startsWith(".") ){ return SKIP_SUBTREE } },
-                nameFilter: namePattern ){
-                    stage( it )
-                }
-        //}
-        println "Scan started at ${start}"    
-        println "Scan completed at ${ new Date() }"    
+
+        current.traverse(
+            type: FILES,
+            preDir:{ if( ignore.contains(it.name) || it.name.startsWith(".") ){ return SKIP_SUBTREE } },
+            nameFilter: namePattern ){
+                stage( it )
+            }
+
+        endTime = new DateTime()
+
+        scanInProgress = false
+
     }
+
+    public String getScanDetails(){
+
+        if( scanInProgress ){
+            """
+                Scan in progress....
+            """
+        }else{
+            StringBuffer duration = new StringBuffer()
+            Period diff = new Period(startTime, endTime);
+            daysHoursMinutes.printTo( duration, diff )
+            """
+            -------------------------------------------------
+                System Name:  ${filter.getSystemName()}
+                Order Number: ${orderNumber?:"not specified"}
+            -------------------------------------------------
+                Location scanned:      ${filter.rootedAt }
+                Scan started at:       ${startTime.toString("MM/dd/yyyy HH:mm:ss")}
+                Scan ended at:         ${endTime.toString("MM/dd/yyyy HH:mm:ss")}
+                Duration:              ${duration}
+                Number of files found: ${staged?.size()?:0}
+                Total size of files:   ${getDisplayUploadSize()}
+            -------------------------------------------------
+            """
+        }
+
+    }
+
+
      
 }
 

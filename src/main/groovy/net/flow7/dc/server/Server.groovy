@@ -54,6 +54,8 @@ public class Server {
         commands.put( "copy", Config.get().prop("command.scan","net.flow7.dc.server.CopyCommand"))
         commands.put( "push", Config.get().prop("command.push","net.flow7.dc.server.SimplePushCommand") )
         commands.put( "list", Config.get().prop("command.list","net.flow7.dc.server.S3ListCommand") )
+        commands.put( "ftp",  Config.get().prop("command.ftp", "net.flow7.dc.server.FtpCommand" )  )
+
         commands.put( "help", Config.get().prop("command.help","net.flow7.dc.server.HelpCommand" ) )
 
         // get the socket time out for the network calls when pushing to Amazon (defaults to 10 minutes)

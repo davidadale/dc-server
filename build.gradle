@@ -24,6 +24,7 @@ dependencies{
     compile 'commons-io:commons-io:2.4'
     compile 'org.yaml:snakeyaml:1.12'
     compile 'com.google.guava:guava:r09'
+    compile 'joda-time:joda-time:2.3'
     testCompile 'org.apache.camel:camel-test:2.11.0'
     testCompile 'junit:junit:4.10'
     testCompile 'org.mockito:mockito-core:1.9.5'

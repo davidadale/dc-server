@@ -6,11 +6,9 @@ import net.flow7.dc.server.ext.Scanner
 import org.apache.commons.io.FileUtils
 
 /**
- * Created with IntelliJ IDEA.
- * User: daviddale
- * Date: 12/4/13
- * Time: 10:51 PM
- * To change this template use File | Settings | File Templates.
+ * This command will do a simple copy moving the scanned
+ * files to a location some where else on the HD or device
+ * that can be accessible from normal file url.
  */
 class CopyCommand extends AbstractCommand{
 

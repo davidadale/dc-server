@@ -5,10 +5,8 @@
 
 package net.flow7.dc.server.routes
 
-import net.flow7.dc.server.IndexWriter
 import org.apache.camel.LoggingLevel
 import org.apache.camel.builder.RouteBuilder
-import org.apache.camel.component.aws.s3.*
 import org.apache.camel.dataformat.tika.TikaDataFormat
 import org.apache.camel.spi.DataFormat
 

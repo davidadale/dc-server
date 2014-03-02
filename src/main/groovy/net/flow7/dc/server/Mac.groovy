@@ -4,9 +4,6 @@
  */
 package net.flow7.dc.server;
 
-import java.util.LinkedList;
-import java.util.List;
-
 /**
  *
  * @author daviddale

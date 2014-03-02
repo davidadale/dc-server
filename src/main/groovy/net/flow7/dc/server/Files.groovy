@@ -18,7 +18,7 @@ public abstract class Files {
     Map<String, String> developer = new HashMap<String, String>();
     Map<String, String> defaultFilters = new HashMap<String,String>();
     
-    static File rootedAt = new File("/");
+    static File rootedAt = null;
  
     static Files instance = null
     
@@ -38,7 +38,16 @@ public abstract class Files {
     }
 
     public File startScanAt(){
-        String fullPath = rootedAt.getCanonicalPath() + getStartLocation()
+
+        String fullPath
+
+        if( !rootedAt ){
+            rootedAt = new File("/")
+            fullPath = rootedAt.getCanonicalPath() + getStartLocation()
+        }else{
+            fullPath = rootedAt.getCanonicalPath()
+        }
+
         return new File( fullPath.endsWith("/")?fullPath.substring( 0, fullPath.length() - 1 ):fullPath );
     }
     

@@ -2,6 +2,7 @@ package net.flow7.dc.server
 
 import net.flow7.dc.server.routes.FtpRoute
 import org.apache.camel.builder.RouteBuilder
+import org.apache.camel.component.aws.s3.S3Constants
 import org.apache.commons.cli.HelpFormatter
 import org.apache.commons.cli.Options
 import net.flow7.dc.server.ext.Scanner
@@ -55,10 +56,14 @@ class FtpCommand  extends AbstractCommand{
 
         ((IndexWriter)registry.getCamelRegistry().lookup("index")).setFile( order );
 
+        files.each{ file ->
+            HashMap<String,Object> headers = new HashMap<String,Object>();
+            headers.put( "DC_FILENAME", file.getName() )
+            headers.put( "DC_FILEPATH", scanner.getRelativePath( file ) )
+            registry.getProducerTemplate().sendBodyAndHeaders("seda:${order}", file, headers );
+        }
 
 
-
-
-        return false  //To change body of implemented methods use File | Settings | File Templates.
+        return true  //To change body of implemented methods use File | Settings | File Templates.
     }
 }

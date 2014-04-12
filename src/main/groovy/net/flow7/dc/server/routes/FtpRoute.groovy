@@ -13,10 +13,11 @@ import org.apache.camel.builder.RouteBuilder
 class FtpRoute extends RouteBuilder{
 
     String orderNumber
+    String location
 
     public FtpRoute(String orderNumber, String location){
         this.orderNumber = orderNumber
-
+        this.location = location
     }
 
     public void configure() throws Exception{
@@ -27,7 +28,7 @@ class FtpRoute extends RouteBuilder{
 
         from(  "seda:${orderNumber}"  ).routeId(  "${orderNumber}-ftp"   )
                 .noAutoStartup()
-                .to("ftp://foo@myserver?password=secret&ftpClientConfig=#myConfig")
+                .to("${location}&binary=true")
     }
 
     public String getRouteName(){

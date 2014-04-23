@@ -38,10 +38,23 @@ class CopyCommand extends AbstractCommand{
         List<File> files = scanner.getStaged();
 
         files.each{ file ->
-           FileUtils.copyFile( file, new File(location, scanner.getRelativePath( file ) ) )
+           FileUtils.copyFile( file, new File(  getPath( location ) , scanner.getRelativePath( file ) ) )
         }
 
         return true
 
+    }
+
+    protected String getPath(String location ){
+        String path = location
+        String orderNumber = Scanner.get().orderNumber
+        if( orderNumber ){
+            if( location.endsWith("/") ){
+                path = "${location}${orderNumber}"
+            }else{
+                path = "${location}/${orderNumber}"
+            }
+        }
+        return path
     }
 }

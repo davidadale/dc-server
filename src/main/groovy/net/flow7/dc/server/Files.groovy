@@ -12,7 +12,12 @@ import java.io.File;
 
 public abstract class Files {
 
+    static final String MAC = "mac"
+    static final String WINDOWS = "windows"
+    static final String UNDETERMINED = "undetermined"
+
     Map<String, String> audio = new HashMap<String, String>();
+    Map<String, String> video = new HashMap<String,String>();
     Map<String, String> documents = new HashMap<String, String>();
     Map<String, String> images = new HashMap<String, String>();
     Map<String, String> developer = new HashMap<String, String>();
@@ -28,10 +33,16 @@ public abstract class Files {
 
     public static Files get(String system) {
 
-        if( "mac".equals(system) ){
+        if( Files.MAC.equals(system) ){
+
             instance = getMacFilter();
-        }else{
+
+        }else if( Files.WINDOWS.equals(system) ){
+
             instance = getWindowsFilter();
+
+        }else{
+            instance = new Undetermined()
         }
        
         return instance;
@@ -77,11 +88,11 @@ public abstract class Files {
     public static String guess(){
         
         if( new File(rootedAt, "Windows").exists() ){
-            return "windows"
+            return WINDOWS
         }
         
         if( new File(rootedAt, "Applications").exists() ){
-            return "mac"
+            return MAC
         }
         
         return null;
@@ -134,6 +145,8 @@ public abstract class Files {
         documents.put(".doc", "Microsoft Word Document");
         documents.put(".docx", "Microsoft Word Open XML Document");
         documents.put(".odt", "OpenDocument Text Document");
+        documents.put(".ods", "OpenDocument spreadsheet");
+        documents.put(".odp", "OpenDocument presentation");
         documents.put(".pages", "Pages Document");
         documents.put(".rtf", "Rich Text Format File");
         documents.put(".tex", "LaTeX Source Document");
@@ -178,7 +191,7 @@ public abstract class Files {
         images.put(".ps", "PostScript File");
         images.put(".svg", "Scalable Vector Graphics File");
         developer.put(".java","Java Source file");
-        developer.put(".jar","Java Archive file");
+        //developer.put(".jar","Java Archive file");
         developer.put(".groovy","Groovy source code");
         
 

@@ -3,7 +3,7 @@ package net.flow7.dc.server
 /**
  * Created by daviddale on 5/12/14.
  */
-class Undetermined extends Files {
+class Undetermined extends FileSystem {
 
     List<String> ignoreDirs
 

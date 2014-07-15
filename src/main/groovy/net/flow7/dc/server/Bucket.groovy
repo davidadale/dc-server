@@ -10,13 +10,7 @@ import org.apache.commons.io.FileUtils
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-/**
- * Created with IntelliJ IDEA.
- * User: daviddale
- * Date: 11/13/13
- * Time: 2:58 PM
- * To change this template use File | Settings | File Templates.
- */
+
 class Bucket {
 
     Logger logger = LoggerFactory.getLogger( Bucket.class )
@@ -61,9 +55,7 @@ class Bucket {
 
     }
 
-
-
-    public void reset(){
+    protected void reset(){
         this.totalSize= 0;
     }
 

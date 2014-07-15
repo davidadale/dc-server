@@ -8,7 +8,7 @@ package net.flow7.dc.server;
  *
  * @author daviddale
  */
-public class Mac extends Files {
+public class Mac extends FileSystem {
 
     List ignore = new LinkedList();
     

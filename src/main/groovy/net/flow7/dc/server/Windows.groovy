@@ -2,16 +2,12 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.flow7.dc.server;
-
-import java.util.LinkedList;
-import java.util.List;
-
+package net.flow7.dc.server
 /**
  *
  * @author daviddale
  */
-public class Windows extends Files{
+public class Windows extends FileSystem{
 
     List ignore = new LinkedList();
 	

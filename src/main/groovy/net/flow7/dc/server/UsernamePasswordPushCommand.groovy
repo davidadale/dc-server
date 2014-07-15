@@ -2,15 +2,14 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.flow7.dc.server;
+package net.flow7.dc.server
 
-import java.io.File;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
-import net.flow7.dc.server.ext.Scanner;
+import net.flow7.dc.server.ext.SystemScanner;
 /**
  *
  * @author daviddale
@@ -48,7 +47,7 @@ public class UsernamePasswordPushCommand implements Command {
 
         //Object amazonCredentials = getAmazonCredentials(username, password);
         
-        for( File file: Scanner.get().getStaged() ){
+        for( File file: SystemScanner.get().getStaged() ){
             //Amazon.push( amazonCredentials, file );
         }
         

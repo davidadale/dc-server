@@ -13,99 +13,49 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.flow7.dc.server;
+package net.flow7.dc.server
 
-import org.apache.camel.Exchange;
-import org.yaml.snakeyaml.Yaml;
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder;
+import org.apache.camel.Exchange
+import org.apache.commons.lang.StringUtils;
 
-/**
- *
- * @author daviddale
- */
+
 public class IndexWriter {
-    
-    Yaml yaml = null
-    String routeId = null
-    Writer writer = null
-    List stuff = []
-    File file = null
 
+    Gson gson
+
+    String routeId = null
+    List<Map> items = new LinkedList<Map>()
 
     public IndexWriter(){
-        yaml = new Yaml()
+        gson = new GsonBuilder().setPrettyPrinting().create();
     }
 
-    public IndexWriter( String routeId ){
-        this()
-    }
-
-    public IndexWriter( Writer writer ){
-        this()
-        this.writer = writer
-    }
-
-    public void setFile( String order ){
-        File dir = new File( System.getProperty("user.home"), "Desktop" )
-        this.file = new File( dir, "${order}-index.yml")
-
-    }
-
-    protected File createFile(){
-        // TODO: Fix this file path so that it will be configured outside of index
-        File dir = new File( System.getProperty("user.home"), "Desktop" )
-        File indexFile = new File( dir, "${routeId}.yml")
-        return indexFile
-    }
-
-    public void setWriter(Writer writer ){
-        this.writer = writer
-    }
-
-    
     public void write( Exchange exchange ){
-
-        if( routeId == null ){
-            routeId = exchange.getFromRouteId()
+        if( !routeId ){
+            routeId = exchange.fromRouteId
         }
 
-        Map headers = exchange.getIn().getHeaders()
+        Map messageHeaders = exchange.getIn().getHeaders()
 
-        if( writer ){
-            appendToWriter( headers )
-        }else{
-            appendToFile( headers )
+        items.add( formatKeys( messageHeaders ) )
+    }
+
+    protected Map formatKeys( messageHeaders ){
+        messageHeaders.collectEntries{ k, v ->
+            String key = k.replace(" ", "")
+            key = key.replace("_", "")
+            [StringUtils.uncapitalize( key ), v ]
         }
-
     }
 
-    protected void appendToWriter( Map headers ){
-        writer.append( "- ${yaml.dump(headers)}\n" )
+    public File getIndexFile(){
+        return new File( System.getProperty("user.dir"), "${routeId}.json")
     }
 
-    protected void appendToFile( Map headers ){
-        if( file == null ){
-            file = createFile()
-        }
-        file.append("- ${yaml.dump(headers)}\n")
+    public String getJson(){
+        return gson.toJson( items )
     }
 
-    public void flush(){
-        if( writer==null ){
-            writer = new FileWriter( createFile() )
-        }
-        yaml.dump( stuff, writer )
-    }
-
-
-    public List read(){
-
-        if( writer instanceof StringWriter ){
-            return yaml.load( writer.toString() )
-        }
-
-        return yaml.load( new FileInputStream( createFile() ) )
-
-    }
-
-    
 }

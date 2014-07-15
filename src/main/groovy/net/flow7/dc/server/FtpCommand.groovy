@@ -1,11 +1,9 @@
 package net.flow7.dc.server
 
 import net.flow7.dc.server.routes.FtpRoute
-import org.apache.camel.builder.RouteBuilder
-import org.apache.camel.component.aws.s3.S3Constants
 import org.apache.commons.cli.HelpFormatter
 import org.apache.commons.cli.Options
-import net.flow7.dc.server.ext.Scanner
+import net.flow7.dc.server.ext.SystemScanner
 
 /**
  * Created with IntelliJ IDEA.
@@ -36,12 +34,12 @@ class FtpCommand  extends AbstractCommand{
         String order = getCommandLine( line, options ).getOptionValue("o")
 
         if( !order ){
-            order = Scanner.get().getOrderNumber();
+            order = SystemScanner.get().getOrderNumber();
         }
 
         if( !ftpLocation || !order ){ return false }
 
-        Scanner scanner = Scanner.get()
+        SystemScanner scanner = SystemScanner.get()
         List<File> files = scanner.getStaged();
 
         if( !files ){

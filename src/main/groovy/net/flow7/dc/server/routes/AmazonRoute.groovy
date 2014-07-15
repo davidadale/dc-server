@@ -5,7 +5,10 @@
 
 package net.flow7.dc.server.routes
 
+import net.flow7.dc.server.ext.SystemScanner
+import org.apache.camel.Exchange
 import org.apache.camel.LoggingLevel
+import org.apache.camel.Processor
 import org.apache.camel.builder.RouteBuilder
 import org.apache.camel.dataformat.tika.TikaDataFormat
 import org.apache.camel.spi.DataFormat
@@ -36,10 +39,15 @@ class AmazonRoute extends RouteBuilder{
                 .maximumRedeliveries(3).maximumRedeliveryDelay(5000)
                 .logStackTrace(true).retryAttemptedLogLevel( LoggingLevel.INFO )  )
 
-        from(  "seda:${orderNumber}"  ).routeId(  "${orderNumber}"   )
+        from(  "seda:${orderNumber}"  ).routeId( orderNumber )
         .noAutoStartup()
         .threads( workers )
-        .to( "bean:bucket" )
+        .to( "bean:bucket" ).process(new Processor(){
+            @Override
+            void process(Exchange exchange) throws Exception {
+                SystemScanner.get().fileTransfersComplete++
+            }
+        })
         .to( "seda:${orderNumber}-out" )
 
         from(  "seda:${orderNumber}-out"  ).routeId( "${orderNumber}-index" )

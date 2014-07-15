@@ -2,7 +2,7 @@ package net.flow7.dc.server
 
 import org.apache.commons.cli.HelpFormatter
 import org.apache.commons.cli.Options
-import net.flow7.dc.server.ext.Scanner
+import net.flow7.dc.server.ext.SystemScanner
 import org.apache.commons.io.FileUtils
 
 /**
@@ -33,28 +33,36 @@ class CopyCommand extends AbstractCommand{
 
         if( !location ){ return false }
 
-        Scanner scanner = Scanner.get()
+        SystemScanner scanner = SystemScanner.get()
+
+        String orderNumber = scanner.getOrderNumber()
+
+        if( !orderNumber ){
+            return false
+        }
+
+        File locationDir = new File( getPath(orderNumber, location ) )
+        locationDir.mkdirs()
+
+        File manifest = new File( locationDir, "drive-cleaners.manifest")
+        manifest.createNewFile()
+        manifest.text = orderNumber
 
         List<File> files = scanner.getStaged();
 
         files.each{ file ->
-           FileUtils.copyFile( file, new File(  getPath( location ) , scanner.getRelativePath( file ) ) )
+           FileUtils.copyFile( file, new File(  getPath( orderNumber, location ) , scanner.getRelativePath( file ) ) )
         }
 
         return true
 
     }
 
-    protected String getPath(String location ){
-        String path = location
-        String orderNumber = Scanner.get().orderNumber
-        if( orderNumber ){
-            if( location.endsWith("/") ){
-                path = "${location}${orderNumber}"
-            }else{
-                path = "${location}/${orderNumber}"
-            }
+    protected static String getPath(String orderNumber, String location ){
+        if( location.endsWith("/") ){
+            return "${location}${orderNumber}"
+        }else{
+            return"${location}/${orderNumber}"
         }
-        return path
     }
 }

@@ -20,7 +20,7 @@ import net.flow7.dc.server.*
  *
  * @author daviddale
  */
-public class Scanner {
+public class SystemScanner {
     
     static instance;
     
@@ -30,14 +30,17 @@ public class Scanner {
     
     String orderNumber;
 
-    Files filter;
+    FileSystem fileSystem;
     PeriodFormatter daysHoursMinutes
     DateTime startTime
     DateTime endTime
 
+    Integer fileTransfersComplete = 0
+    Integer fileTransfersFailed = 0
+
     boolean scanInProgress = false
     
-    private Scanner(){
+    private SystemScanner(){
         staged = [];
         daysHoursMinutes = new PeriodFormatterBuilder()
                 .appendDays()
@@ -51,17 +54,13 @@ public class Scanner {
                 .toFormatter();
     }
     
-    public static Scanner get(){
+    public static SystemScanner get(){
         if( instance== null ){
-            instance = new Scanner();
+            instance = new SystemScanner();
         }
         return instance;
     }
 
-    public void setFiles( Files filter ){
-        this.filter = filter;
-    }
-    
     public String getOrderNumber(){
         return this.orderNumber;
     }
@@ -81,7 +80,7 @@ public class Scanner {
     }
 
     public String getRelativePath(File file){
-        return file.getCanonicalPath() - filter.startScanAt().getCanonicalPath()
+        return file.getCanonicalPath() - fileSystem.startScanAt().getCanonicalPath()
     }
     
     public Long getTotalUploadSize(){
@@ -89,7 +88,7 @@ public class Scanner {
     }
     
     public String getDisplayUploadSize(){
-        return Files.readableFileSize( totalSize );
+        return FileSystem.readableFileSize( totalSize );
     }
     
     public List<File> getStaged(){
@@ -100,6 +99,8 @@ public class Scanner {
         staged = []
         totalSize = 0
         orderNumber = ""
+        fileTransfersFailed = 0
+        fileTransfersComplete = 0
     }
     
     public void scan( String orderNumber ){
@@ -112,9 +113,9 @@ public class Scanner {
         
         startTime = new DateTime()
 
-        File current = filter.startScanAt();
-        List ignore = filter.getIgnoreDirs();
-        Pattern namePattern = filter.getNamePattern();
+        File current = fileSystem.startScanAt();
+        List ignore = fileSystem.getIgnoreDirs();
+        Pattern namePattern = fileSystem.getNamePattern();
 
 
         current.traverse(
@@ -142,10 +143,10 @@ public class Scanner {
             daysHoursMinutes.printTo( duration, diff )
             """
             -------------------------------------------------
-                System Name:  ${filter.getSystemName()}
+                System Name:  ${fileSystem.getSystemName()}
                 Order Number: ${orderNumber?:"not specified"}
             -------------------------------------------------
-                Location scanned:      ${filter.rootedAt }
+                Location scanned:      ${fileSystem.rootedAt }
                 Scan started at:       ${startTime.toString("MM/dd/yyyy HH:mm:ss")}
                 Scan ended at:         ${endTime.toString("MM/dd/yyyy HH:mm:ss")}
                 Duration:              ${duration}
@@ -155,6 +156,17 @@ public class Scanner {
             """
         }
 
+    }
+
+    public String getPushResults(){
+        """
+        --------------------------------------
+            Files Staged:                   ${staged.size()?:0}
+            Files Transferred Successfully: ${fileTransfersComplete}
+            Files Failed To Transfer:       ${fileTransfersFailed}
+            Percent Complete:               ${ ((Integer) (fileTransfersComplete?:1) /staged.size() * 100 ) } %
+        --------------------------------------
+        """
     }
 
 

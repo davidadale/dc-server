@@ -1,17 +1,10 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package net.flow7.dc.server;
 
 import net.flow7.dc.server.ext.*;
 import org.apache.camel.component.aws.s3.*
 import org.apache.commons.cli.HelpFormatter
 import org.apache.commons.cli.Options
-import org.apache.commons.io.IOUtils
-import com.google.common.io.ByteStreams
-
-import java.security.MessageDigest
 
 /**
  *
@@ -38,14 +31,14 @@ public class SimplePushCommand extends AbstractCommand {
         String order = getCommandLine( line, options ).getOptionValue("o")
 
         if( !order ){
-            order = Scanner.get().getOrderNumber();
+            order = SystemScanner.get().getOrderNumber();
         }
 
         if( !order ){
            return false
         }
 
-        Scanner scanner = Scanner.get()
+        SystemScanner scanner = SystemScanner.get()
 
         List<File> files = scanner.getStaged();
 
@@ -55,12 +48,11 @@ public class SimplePushCommand extends AbstractCommand {
 
         SystemRegistry registry = SystemRegistry.get()
 
+        //((IndexWriter)registry.getCamelRegistry().lookup("index")).setFile( order );
+        ((Bucket)registry.getCamelRegistry().lookup("bucket")).reset()
 
         registry.getContext().addRoutes( Routes.toAmazon( order )  )
         registry.getContext().startRoute( order )
-
-        ((IndexWriter)registry.getCamelRegistry().lookup("index")).setFile( order );
-        ((Bucket)registry.getCamelRegistry().lookup("bucket")).reset()
 
         try{
 
@@ -69,9 +61,9 @@ public class SimplePushCommand extends AbstractCommand {
                 HashMap<String,Object> headers = new HashMap<String,Object>();
                 headers.put( S3Constants.BUCKET_NAME, order )
                 headers.put( S3Constants.KEY, UUID.randomUUID().toString()  );
-                headers.put( "DC_FILENAME", file.getName() )
-                headers.put( "DC_FILEPATH", scanner.getRelativePath( file ) )
-                registry.getProducerTemplate().sendBodyAndHeaders("seda:${order}", file, headers );
+                headers.put( "dcFileName", file.getName() )
+                headers.put( "dcFilePath", scanner.getRelativePath( file ) )
+                registry.getProducerTemplate().sendBodyAndHeaders( "seda:${order}", file, headers );
             }
 
         }finally{

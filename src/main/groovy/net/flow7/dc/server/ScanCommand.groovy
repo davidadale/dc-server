@@ -5,12 +5,10 @@
 
 package net.flow7.dc.server;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.CommandLine
 import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.PosixParser;
-import net.flow7.dc.server.ext.Scanner;
+import org.apache.commons.cli.Options
+import net.flow7.dc.server.ext.SystemScanner;
 
 /**
  *
@@ -38,12 +36,12 @@ public class ScanCommand extends AbstractCommand {
     public boolean process(String line) throws Exception {
 
         CommandLine cmd = getCommandLine(line, options);
-        Files filter = determineSystem( cmd, determineStart( cmd ) )
+        FileSystem filter = determineSystem( cmd, determineStart( cmd ) )
 
-        Scanner.get().setFiles( filter )
-        Scanner.get().scan( cmd.getOptionValue("o") );
+        SystemScanner.get().setFileSystem( filter )
+        SystemScanner.get().scan( cmd.getOptionValue("o") );
 
-        println Scanner.get().getScanDetails()
+        println SystemScanner.get().getScanDetails()
 
         return true;
     }
@@ -54,18 +52,18 @@ public class ScanCommand extends AbstractCommand {
      * @param current
      * @return
      */
-    protected Files determineSystem( CommandLine cmd, File current ){
+    protected FileSystem determineSystem( CommandLine cmd, File current ){
         String system;
         
-        Files.setRoot( current );
+        FileSystem.setRoot( current );
         
         if( cmd.hasOption("t") ){
             system = cmd.getOptionValue("t");
         }else{
-            system = Files.guess()
+            system = FileSystem.guess()
         }
         
-        return Files.get( system );
+        return FileSystem.get( system );
     }
 
     /**

@@ -2,15 +2,10 @@ package net.flow7.dc.server;
 
 import com.google.common.base.Joiner
 
-import java.text.DecimalFormat;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Pattern;
-import java.io.File;
+import java.text.DecimalFormat
+import java.util.regex.Pattern
 
-public abstract class Files {
+public abstract class FileSystem {
 
     static final String MAC = "mac"
     static final String WINDOWS = "windows"
@@ -25,19 +20,19 @@ public abstract class Files {
     
     static File rootedAt = null;
  
-    static Files instance = null
+    static FileSystem instance = null
     
     public static void setRoot( File rootedAt){
         this.rootedAt = rootedAt;        
     }
 
-    public static Files get(String system) {
+    public static FileSystem get(String system) {
 
-        if( Files.MAC.equals(system) ){
+        if( MAC.equals(system) ){
 
             instance = getMacFilter();
 
-        }else if( Files.WINDOWS.equals(system) ){
+        }else if( WINDOWS.equals(system) ){
 
             instance = getWindowsFilter();
 
@@ -63,20 +58,20 @@ public abstract class Files {
     }
     
     
-    protected static Object getMacFilter(){
+    protected static FileSystem getMacFilter(){
         try{
             String clzz = Config.get().prop("macFilter","net.flow7.dc.server.Mac")
-            return Class.forName( clzz ).newInstance()
+            return ((FileSystem)Class.forName( clzz ).newInstance())
         }catch(Exception e){
             e.printStackTrace()
             return null
         }
         
     }
-    protected static Object getWindowsFilter(){
+    protected static FileSystem getWindowsFilter(){
         try{
             String clzz = Config.get().prop("windowsFilter","net.flow7.dc.server.Windows")
-            return Class.forName( clzz ).newInstance()
+            return ((FileSystem)Class.forName( clzz ).newInstance())
         }catch(Exception e){
             e.printStackTrace()
             return null            
@@ -127,7 +122,7 @@ public abstract class Files {
 
     }
 
-    protected Files() {
+    protected FileSystem() {
         audio.put(".aac", "Apple audio format");
         audio.put(".aif", "Audio Interchange File Format");
         audio.put(".iff", "Interchange File Format");

@@ -19,7 +19,7 @@ import com.amazonaws.services.s3.AmazonS3
  *
  * @author daviddale
  */
-public class S3ListCommand implements Command{
+public class S3ListCommand extends AbstractCommand{
     
     Options options; 
     
@@ -37,10 +37,8 @@ public class S3ListCommand implements Command{
 
     @Override
     public boolean process(String line) throws Exception{
-        String[] args = line.split(" ");
-        
-        CommandLineParser parser = new PosixParser();
-        CommandLine cmd = parser.parse(options, args);
+
+        CommandLine cmd = getCommandLine( line, options )
         
         // require the order option
         if( !cmd.hasOption("o") ){

@@ -60,7 +60,9 @@ public class SystemRegistry {
         
         if( camelRegistry == null ){
             camelRegistry = new SimpleRegistry();
-            getContext().setRegistry( camelRegistry );
+            if( getContext() instanceof DefaultCamelContext ){
+                ((DefaultCamelContext)getContext()).setRegistry(camelRegistry)
+            }
         }
         
         camelRegistry.put( key,object );
@@ -118,7 +120,7 @@ public class SystemRegistry {
     
     }
     
-    protected String firstArg(String line ){
+    protected static String firstArg(String line ){
         String[] args = line.split(" ");
         return args[0];
     }

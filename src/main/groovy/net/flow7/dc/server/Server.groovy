@@ -16,6 +16,7 @@
 package net.flow7.dc.server
 
 import jline.console.ConsoleReader
+import net.flow7.dc.server.event.FileTransferNotifier
 import org.apache.commons.cli.CommandLine
 import org.apache.commons.cli.CommandLineParser
 import org.apache.commons.cli.Options
@@ -54,7 +55,11 @@ public class Server {
         commands.put( "copy", Config.get().prop("command.scan","net.flow7.dc.server.CopyCommand"))
         commands.put( "push", Config.get().prop("command.push","net.flow7.dc.server.SimplePushCommand") )
         commands.put( "list", Config.get().prop("command.list","net.flow7.dc.server.S3ListCommand") )
+        commands.put( "rm",   Config.get().prop("command.rm",  "net.flow7.dc.server.S3DeleteCommand"))
         commands.put( "ftp",  Config.get().prop("command.ftp", "net.flow7.dc.server.FtpCommand" )  )
+        commands.put( "assign", Config.get().prop("command.assign","net.flow7.dc.server.AssignOrderNumberCommand") )
+        commands.put( "status", Config.get().prop("command.status","net.flow7.dc.server.PushStatusCommand"))
+        commands.put( "createIndex", Config.get().prop("command.createIndex","net.flow7.dc.server.WriteIndexCommand"))
 
         commands.put( "help", Config.get().prop("command.help","net.flow7.dc.server.HelpCommand" ) )
 
@@ -67,7 +72,9 @@ public class Server {
 
         logger.debug( "Socket timeout is set to: %s", socketTimeout  )
 
-        // create an amazon client 
+        // create an amazon client
+        // By default the environment variables AWS_ACCESS_KEY_ID (or AWS_ACCESS_KEY)
+        // and AWS_SECRET_KEY (or AWS_SECRET_ACCESS_KEY) will be used to connect to amazon account.
         AmazonS3 client = new AmazonS3Client( Config.get().getCredentialsProvider(), clientConfig );
 
         // register a few objects for use later on
@@ -75,6 +82,8 @@ public class Server {
         SystemRegistry.get().bind( "index", new IndexWriter() )
         SystemRegistry.get().bind( "translator", new TikaTranslator() )
         SystemRegistry.get().bind( "bucket", new Bucket() )
+
+        //SystemRegistry.get().getContext().getManagementStrategy().addEventNotifier( new FileTransferNotifier() )
 
         // start the camel context
         SystemRegistry.get().getContext().start()

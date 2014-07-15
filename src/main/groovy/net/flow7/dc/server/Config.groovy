@@ -80,7 +80,7 @@ public class Config {
     }
     
     public AWSCredentialsProvider getCredentialsProvider(){
-        Object obj = null;
+        Object obj;
         try{
             Class impl = Class.forName(prop("credentials.provider","com.amazonaws.auth.EnvironmentVariableCredentialsProvider"));
             obj = impl.newInstance();
@@ -92,7 +92,7 @@ public class Config {
         return (AWSCredentialsProvider)obj;
     }
     
-    private void createConfigFile(){
+    private static void createConfigFile(){
         try{
             configFile.createNewFile();
         }catch(Exception e){
@@ -112,18 +112,6 @@ public class Config {
         }
     }
 
-    /**
-     * Utility method for returning an Integer from the settings in dc.config
-     * @param key
-     * @return
-     */
-    public Integer getNumber( String key ){
-        try{
-            return Integer.valueOf( prop( key ) );
-        }catch(Exception e ){
-            return 0;
-        }
-    }
 
     /**
      * Utility method for returning an Integer form dc.config setting to default value if not set.
@@ -171,11 +159,11 @@ public class Config {
      * @param key
      * @return
      */
-    public String env(String key){
+    public static String env(String key){
         return System.getenv( key );
     }
 
-    public Boolean envAsBoolean(String key){
+    public static Boolean envAsBoolean(String key){
         return "true".equals( env( key ) ) ||
                 "1".equals( env( key ) );
     }
